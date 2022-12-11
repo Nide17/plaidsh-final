@@ -280,7 +280,6 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
 
       case '?':
       case '*':
-      case '/':
         // WILDCARD EXTENSION
         glob(word, GLOB_NOCHECK, NULL, &globbuf);
         break;
@@ -291,7 +290,10 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
 
       // Otherwise, add each of the resulting filenames to the command using command_append_arg.
       for (int i = 0; i < globbuf.gl_pathc; i++)
-        command_append_arg(cmd, globbuf.gl_pathv[i]);
+        if (word[strlen(word) - 1] == '/')
+          command_append_arg(cmd, word);
+        else
+          command_append_arg(cmd, globbuf.gl_pathv[i]);
 
       globfree(&globbuf);
     }
