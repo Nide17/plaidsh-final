@@ -388,16 +388,16 @@ ilse_test_parse_input()
       "ls", "one.c", "one.h", "three.c", "three.h", NULL);
   passed += test_parser_once("ls ~ > file1", NULL, "file1", true,
       "ls", getenv("HOME"), NULL);
-  passed += test_parser_once("~howdy", NULL, NULL, true,
-      "/home/howdy", NULL);
-  passed += test_parser_once("~howdy/tmp", NULL, NULL, true,
-      "/home/howdy/tmp", NULL);
+  passed += test_parser_once("~parmenin", NULL, NULL, true,
+                             "/home/parmenin", NULL);
+  passed += test_parser_once("~parmenin/tmp", NULL, NULL, true,
+                             "/home/parmenin/tmp", NULL);
   passed += test_parser_once("/foo/~/bar/", NULL, NULL, true,
-      "/foo/~/bar/", NULL);
+                             "/foo/~/bar/", NULL);
   passed += test_parser_once("sed s/foo/bar/", NULL, NULL, true,
-      "sed", "s/foo/bar/", NULL);
-  passed += test_parser_once("~howdy/tmp", NULL, NULL, true,
-      "/home/howdy/tmp", NULL);
+                             "sed", "s/foo/bar/", NULL);
+  passed += test_parser_once("~parmenin/tmp", NULL, NULL, true,
+                             "/home/parmenin/tmp", NULL);
 
   // Delete the glob test files plus the tempdir
   for (int i=0; files[i]; i++) 
