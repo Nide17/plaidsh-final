@@ -143,11 +143,18 @@ int read_word(const char *input, char *word, size_t word_len)
 
       varContainter[count] = '\0';
 
+      // // CHECK IF THE VARIABLE NAME IS NOT EMPTY
+      // if (strlen(varContainter) == 0)
+      // {
+      //   sprintf(word, "Empty variable name");
+      //   return -1;
+      // }
+
       // GETTING THE VALUE OF THE VARIABLE FROM THE ENVIRONMENT
       char *actValue = getenv(varContainter);
 
       // IF THE VARIABLE IS NOT DEFINED, RETURN AN ERROR
-      if (actValue == NULL)
+      if (actValue == NULL || strlen(varContainter) == 0)
       {
         sprintf(word, "Undefined variable: \'%s\'", varContainter);
         return -1;

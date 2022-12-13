@@ -124,6 +124,45 @@ static int builtin_pwd(command_t *cmd)
 }
 
 /*
+ * Handles the builtin environment setting, by setting the variable varname to value
+ * by using the setenv() function.
+ * 
+ * Parameters:
+ *   varname     The variable name to set
+ *   value       The value for the variable
+ *
+ * Returns:
+ *   Returns 0 on success, 1 on error
+ */
+static int builtin_setenv(command_t *cmd) {
+
+  // THERE IS ONE ARG AND IS THE setenv || THERE IS TWO ARGS - THE setenv & VARNAME - NO VALUE
+  if ((command_get_argc(cmd) == 1 && strcmp(command_get_argv(cmd)[0], "setenv") == 0) || (command_get_argc(cmd) == 2 && strcmp(command_get_argv(cmd)[0], "setenv") == 0))
+  {
+    fprintf(stderr, "Illegal variable name: '%s'\n", command_get_argv(cmd)[1]);
+    return 1;
+  }
+
+  // THERE IS THREE ARGS AND IS THE setenv - SET THE ENVIRONMENT VARIABLE TO THE THIRD ARG
+  else if (command_get_argc(cmd) == 3 && strcmp(command_get_argv(cmd)[0], "setenv") == 0)
+  {
+    // SET THE ENVIRONMENT VARIABLE
+    setenv(command_get_argv(cmd)[1], command_get_argv(cmd)[2], 1);
+    return 0;
+  }
+
+  // WHEN ARGS ARE GREATER THAN 3
+  else if (command_get_argc(cmd) > 3 && strcmp(command_get_argv(cmd)[0], "setenv") == 0)
+  {
+    fprintf(stderr, "Invalid syntax for: '%s'\n", command_get_argv(cmd)[0]);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+/*
  * Process an external (non built-in) command, by forking and execing
  * a child process, and waiting for the child to terminate
  *
@@ -192,6 +231,10 @@ void execute_command(command_t *cmd)
   // EXECUTING THE pwd COMMAND
   else if (strcmp(command_get_argv(cmd)[0], "pwd") == 0)
     builtin_pwd(cmd);
+
+  // EXECUTING THE setenv COMMAND
+  else if (strcmp(command_get_argv(cmd)[0], "setenv") == 0)
+    builtin_setenv(cmd);
 
   // EXECUTING EXTERNAL COMMANDS (NOT BUILT-IN)
   else
