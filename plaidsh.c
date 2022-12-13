@@ -33,6 +33,8 @@ static int builtin_exit(command_t *cmd)
 {
   // ONE ARG AND IS exit OR quit
   if (command_get_argc(cmd) == 1 && (strcmp(command_get_argv(cmd)[0], "exit") == 0 || strcmp(command_get_argv(cmd)[0], "quit") == 0))
+
+    // EXIT THE SHELL
     exit(0);
 
   return 0;
@@ -57,6 +59,7 @@ static int builtin_author(command_t *cmd)
     printf("Niyomwungeri Parmenide Parmenide\n");
     return 0;
   }
+
   // FAILURE
   return 1;
 }
@@ -75,7 +78,7 @@ static int builtin_cd(command_t *cmd)
 {
   if (command_get_argc(cmd) == 1 && strcmp(command_get_argv(cmd)[0], "cd") == 0)
   {
-    // CHANGE DIRECTORY TO HOME
+    // CHANGE DIRECTORY TO HOME IF NO ARG TO cd
     if (chdir(getenv("HOME")) == 0)
       return 0;
   }
@@ -107,6 +110,8 @@ static int builtin_pwd(command_t *cmd)
   if (command_get_argc(cmd) == 1 && strcmp(command_get_argv(cmd)[0], "pwd") == 0)
   {
     char currentDir[1024];
+
+    // GET THE CURRENT WORKING DIRECTORY
     getcwd(currentDir, sizeof(currentDir));
 
     // PRINT THE CURRENT WORKING DIRECTORY
@@ -137,6 +142,7 @@ static int forkexec_external_cmd(command_t *cmd)
   // IF PARENT PROCESS - EXECUTE IT
   if (pid == 0)
   {
+    // EXECUTE THE COMMAND
     execvp(command_get_argv(cmd)[0], command_get_argv(cmd));
     exit(0);
   }
@@ -145,6 +151,8 @@ static int forkexec_external_cmd(command_t *cmd)
   else if (pid > 0)
   {
     int status;
+
+    // WAIT FOR THE CHILD PROCESS TO TERMINATE
     waitpid(pid, &status, 0);
     return WEXITSTATUS(status);
   }
@@ -165,6 +173,8 @@ static int forkexec_external_cmd(command_t *cmd)
  */
 void execute_command(command_t *cmd)
 {
+
+  // ASSERT THAT THERE IS AT LEAST ONE ARGUMENT
   assert(command_get_argc(cmd) >= 1);
 
   // EXECUTING THE exit, quit COMMAND
@@ -193,32 +203,33 @@ void execute_command(command_t *cmd)
  */
 void mainloop()
 {
-  char *input = NULL;
-  char argv[MAX_ARGS];
   command_t *cmd = NULL;
+  char argv[MAX_ARGS];
+  char *inp = NULL;
 
+  // PRINTING THE WELCOME MESSAGE AND PROMPT TO THE USER ON THE SCREEN
   fprintf(stdout, "Welcome to Plaid Shell!\n");
-  const char *prompt = "#> ";
+  const char *userInput = "#> ";
 
   // CONNECTING THE readline, read_word, AND parse_input IN A LOOP
   while (1)
   {
 
     // GETTING THE INPUT FROM THE USER
-    input = readline(prompt);
+    inp = readline(userInput);
 
     // SAVING THE INPUT TO HISTORY
-    add_history(input);
+    add_history(inp);
 
     // IF NO INPUT, KEEP PROMPTING
-    if (input == NULL)
+    if (inp == NULL)
       exit(0);
 
-    if (*input == '\0')
+    if (*inp == '\0')
       continue;
 
     // GETTING AND PARSING THE INPUT
-    cmd = parse_input(input, argv, MAX_ARGS);
+    cmd = parse_input(inp, argv, MAX_ARGS);
 
     // ARGUMENTS ERROR
     if (command_get_argc(cmd) == -1)
