@@ -215,8 +215,14 @@ static int forkexec_external_cmd(command_t *cmd)
   // IF PARENT PROCESS - EXECUTE IT
   if (pid == 0)
   {
-    // EXECUTE THE COMMAND
-    execvp(command_get_argv(cmd)[0], command_get_argv(cmd));
+    // EXECUTE THE COMMAND IF IT EXISTS
+    if (execvp(command_get_argv(cmd)[0], command_get_argv(cmd)) == -1)
+    {
+      fprintf(stderr, "Command not found: '%s'\n", command_get_argv(cmd)[0]);
+      exit(-1);
+    }
+
+    // EXIT
     exit(0);
   }
 
@@ -229,10 +235,11 @@ static int forkexec_external_cmd(command_t *cmd)
     waitpid(pid, &status, 0);
     return WEXITSTATUS(status);
   }
+
   // IF ERROR, COMMAND FAILED - RETURN -1
   else
   {
-    fprintf(stderr, "Child %d exited with status %d \n", pid, WEXITSTATUS(pid));
+    fprintf(stdout, "Child %d exited with status %d \n", pid, WEXITSTATUS(pid));
     return -1;
   }
 }
@@ -280,7 +287,6 @@ void execute_command(command_t *cmd)
  */
 void mainloop()
 {
-  command_t *cmd = NULL;
   char argv[MAX_ARGS];
   char *inp = NULL;
 
@@ -305,16 +311,8 @@ void mainloop()
     if (*inp == '\0')
       continue;
 
-    // GETTING AND PARSING THE INPUT
-    cmd = parse_input(inp, argv, MAX_ARGS);
-
-    // ARGUMENTS ERROR
-    if (command_get_argc(cmd) == -1)
-      printf(" Error: %s\n", command_get_argv(cmd)[0]);
-
-    // THE ARGUMENTS ARE OK - RUN THE COMMAND
-    else
-      execute_command(cmd);
+    // GETTING AND PARSING THE INPUT, EXECUTING THE COMMAND
+    execute_command(parse_input(inp, argv, sizeof(argv)));
   }
 }
 

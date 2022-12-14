@@ -200,6 +200,8 @@ int read_word(const char *input, char *word, size_t word_len)
         strcpy(word, "Redirection without filename");
         return -1;
       }
+
+      
       // IF THE REDIRECTION OPERATOR IS NOT PRECEDED BY A SPACE, THEN IT IS NOT A REDIRECTION OPERATOR
       else
         break;
