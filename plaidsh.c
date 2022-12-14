@@ -254,8 +254,8 @@ static int forkexec_external_cmd(command_t *cmd)
 void execute_command(command_t *cmd)
 {
 
-  // ASSERT THAT THERE IS AT LEAST ONE ARGUMENT
-  assert(command_get_argc(cmd) >= 1);
+  // IF THERE IS AT LEAST ONE ARGUMENT
+  if(command_get_argc(cmd) >= 1) {
 
   // EXECUTING THE exit, quit COMMAND
   if (strcmp(command_get_argv(cmd)[0], "exit") == 0 || strcmp(command_get_argv(cmd)[0], "quit") == 0)
@@ -280,6 +280,11 @@ void execute_command(command_t *cmd)
   // EXECUTING EXTERNAL COMMANDS (NOT BUILT-IN)
   else
     forkexec_external_cmd(cmd);
+}
+
+// IF NO ARGUMENTS, PRINT CURRENT ERROR AND KEEP PROMPTING
+else
+  fprintf(stderr, "Error!\n");
 }
 
 /*
