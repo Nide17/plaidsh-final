@@ -131,7 +131,7 @@ int read_word(const char *input, char *word, size_t word_len)
     else if (*inpt == '$')
     {
       int count = 0;
-      char *varContainter = malloc(sizeof(char) * 32);
+      char *varContainter = malloc(strlen(inpt) * sizeof(char));
 
       // CHECK IF THE VARIABLE NAME IS ALPHANUMERIC
       while (isalnum(*(inpt + 1)))
@@ -143,18 +143,11 @@ int read_word(const char *input, char *word, size_t word_len)
 
       varContainter[count] = '\0';
 
-      // // CHECK IF THE VARIABLE NAME IS NOT EMPTY
-      // if (strlen(varContainter) == 0)
-      // {
-      //   sprintf(word, "Empty variable name");
-      //   return -1;
-      // }
-
       // GETTING THE VALUE OF THE VARIABLE FROM THE ENVIRONMENT
       char *actValue = getenv(varContainter);
 
-      // IF THE VARIABLE IS NOT DEFINED, RETURN AN ERROR
-      if (actValue == NULL || strlen(varContainter) == 0)
+      // IF THE VARIABLE - varContainter - IS NOT DEFINED, RETURN AN ERROR
+      if (!actValue)
       {
         sprintf(word, "Undefined variable: \'%s\'", varContainter);
         return -1;
@@ -162,6 +155,7 @@ int read_word(const char *input, char *word, size_t word_len)
 
       // COPY THE VALUE OF THE VARIABLE TO THE WORD
       strcpy(w, actValue);
+
 
       // MOVE THE POINTER TO THE END OF THE VALUE
       w += strlen(actValue);
@@ -173,8 +167,8 @@ int read_word(const char *input, char *word, size_t word_len)
       inpt++;
     }
 
-    // SUPPORTING GLOB PATTERN EXPANSION
-    else if (*inpt == '<' || *inpt == '>')
+    // SUPPORTING GLOB PATTERN EXPANSION FOR <, >, >>
+    else if (*inpt == '<' || *inpt == '>' || (*inpt == '>' && *(inpt + 1) == '>'))
     {
       // IF WE ARE BETWEEN QUOTES, THEN < OR > ARE NOT REDIRECTION OPERATORS, SO COPY THEM TO THE WORD
       if (insideQuotes)
@@ -263,11 +257,10 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
       continue;
 
     // IF THE FIRST CHARACTER OF THE WORD IS < OR >
-    if (word[0] == '<' || word[0] == '>')
+    if (word[0] == '<' || word[0] == '>' || (word[0] == '>' && word[1] == '>'))
     {
-
       // ALREADY A VALUE FOR IN_FILE OR OUT_FILE, COPY ERROR - “Multiple redirections not allowed”
-      if ((word[0] == '<' && command_get_input(cmd) != NULL) || (word[0] == '>' && command_get_output(cmd) != NULL))
+      if ((word[0] == '<' && command_get_input(cmd) != NULL) || (word[0] == '>' && command_get_output(cmd) != NULL) || (word[0] == '>' && word[1] == '>' && command_get_output(cmd) != NULL))
       {
         strncpy(err_msg, "Multiple redirections not allowed", err_msg_len);
         return NULL;
@@ -276,6 +269,10 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
       // OTHERWISE, PASS THE PROVIDED FILENAME, STARTING AT word[1]
       if (word[0] == '<')
         command_set_input(cmd, word + 1);
+
+      else if (word[0] == '>' && word[1] == '>')
+        command_set_output(cmd, word + 2);
+
       else
         command_set_output(cmd, word + 1);
     }

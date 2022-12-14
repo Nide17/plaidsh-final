@@ -56,13 +56,32 @@ static int builtin_author(command_t *cmd)
   // THERE IS ONE ARG AND IS author
   if (command_get_argc(cmd) == 1 && strcmp(command_get_argv(cmd)[0], "author") == 0)
   {
-    printf("Niyomwungeri Parmenide Parmenide\n");
+    // DEFINE THE OUTPUT FILENAME
+    const char *outFile = command_get_output(cmd);
+
+    // IF FILE DEFINED, REDIRECT STDOUT TO FILE
+    if (outFile != NULL)
+    {
+      freopen(outFile, "w", stdout);
+    }
+
+    // ELSE PRINT TO STDOUT
+    printf("Niyomwungeri Parmenide ISHIMWE\n");
+
+    // IF FILE DEFINED, REDIRECT STDOUT BACK TO TERMINAL
+    if (outFile != NULL)
+    {
+      freopen("/dev/tty", "w", stdout);
+    }
+
+    // SUCCESS
     return 0;
   }
 
   // FAILURE
   return 1;
 }
+
 /*
  * Handles the cd builtin, by setting cwd to argv[1], which must exist.
  *
@@ -110,12 +129,27 @@ static int builtin_pwd(command_t *cmd)
   if (command_get_argc(cmd) == 1 && strcmp(command_get_argv(cmd)[0], "pwd") == 0)
   {
     char currentDir[1024];
+    // DEFINE THE OUTPUT FILENAME
+    const char *outFile = command_get_output(cmd);
 
     // GET THE CURRENT WORKING DIRECTORY
     getcwd(currentDir, sizeof(currentDir));
 
+    // IF FILE DEFINED, REDIRECT STDOUT TO FILE
+    if (outFile != NULL)
+    {
+      freopen(outFile, "w", stdout);
+    }
+
     // PRINT THE CURRENT WORKING DIRECTORY
     printf("%s \n", currentDir);
+
+    // IF FILE DEFINED, REDIRECT STDOUT BACK TO TERMINAL
+    if (outFile != NULL)
+    {
+      freopen("/dev/tty", "w", stdout);
+    }
+
     return 0;
   }
 
@@ -126,7 +160,7 @@ static int builtin_pwd(command_t *cmd)
 /*
  * Handles the builtin environment setting, by setting the variable varname to value
  * by using the setenv() function.
- * 
+ *
  * Parameters:
  *   varname     The variable name to set
  *   value       The value for the variable
@@ -134,7 +168,8 @@ static int builtin_pwd(command_t *cmd)
  * Returns:
  *   Returns 0 on success, 1 on error
  */
-static int builtin_setenv(command_t *cmd) {
+static int builtin_setenv(command_t *cmd)
+{
 
   // THERE IS ONE ARG AND IS THE setenv || THERE IS TWO ARGS - THE setenv & VARNAME - NO VALUE
   if ((command_get_argc(cmd) == 1 && strcmp(command_get_argv(cmd)[0], "setenv") == 0) || (command_get_argc(cmd) == 2 && strcmp(command_get_argv(cmd)[0], "setenv") == 0))
@@ -160,7 +195,6 @@ static int builtin_setenv(command_t *cmd) {
 
   return 0;
 }
-
 
 /*
  * Process an external (non built-in) command, by forking and execing
