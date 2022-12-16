@@ -39,7 +39,7 @@ int builtin_exit(command_t *cmd)
   return 0;
 }
 
-// Test for builtin_exit function once
+// TEST FOR builtin_exit FUNCTION ONCE
 bool test_builtin_exit_once(command_t *cmd, int expected)
 {
   // CALL THE FUNCTION BUT DO NOT EXIT THE SHELL
@@ -51,10 +51,11 @@ bool test_builtin_exit_once(command_t *cmd, int expected)
 
   // ELSE PRINT ERROR MESSAGE
   printf("Test failed for builtin_exit function with exit code %d instead of %d for command %s\n", actualExit, expected, command_get_argv(cmd)[0]);
+
   return false;
 }
 
-// Tests for builtin_exit function
+// TESTS FOR exit AND quit FUNCTIONS
 bool test_builtin_exit()
 {
   int passed = 0;
@@ -110,7 +111,7 @@ int builtin_author(command_t *cmd)
   return 1;
 }
 
-// Tests one test case of the builtin_author function
+// TESTS ONE CASE OF THE builtin_author FUNCTION
 bool test_builtin_author_once(command_t *cmd, int expected)
 {
   int actualAuthor = builtin_author(cmd);
@@ -123,7 +124,7 @@ bool test_builtin_author_once(command_t *cmd, int expected)
   return true;
 }
 
-// Tests the builtin_author function
+// TESTS FOR author FUNCTION
 bool test_builtin_author()
 {
   int passed = 0;
@@ -171,7 +172,7 @@ int builtin_cd(command_t *cmd)
   return 1;
 }
 
-// Tests one test case of the builtin_cd function
+// TESTS ONE CASE OF THE builtin_cd FUNCTION
 bool test_builtin_cd_once(command_t *cmd, int expected)
 {
   int actualCd = builtin_cd(cmd);
@@ -184,7 +185,7 @@ bool test_builtin_cd_once(command_t *cmd, int expected)
   return true;
 }
 
-// Tests the builtin_cd function
+// TESTS THE cd FUNCTION
 bool test_builtin_cd()
 {
   int passed = 0;
@@ -230,18 +231,14 @@ int builtin_pwd(command_t *cmd)
 
     // IF FILE DEFINED, REDIRECT STDOUT TO FILE
     if (outFile != NULL)
-    {
       freopen(outFile, "a", stdout);
-    }
 
     // PRINT THE CURRENT WORKING DIRECTORY
     printf("%s \n", currentDir);
 
     // IF FILE DEFINED, REDIRECT STDOUT BACK TO TERMINAL
     if (outFile != NULL)
-    {
       freopen("/dev/tty", "w", stdout);
-    }
 
     return 0;
   }
@@ -250,7 +247,8 @@ int builtin_pwd(command_t *cmd)
   return 1;
 }
 
-// Tests one test case of the builtin_pwd function
+
+// TESTS ONE CASE OF THE builtin_pwd FUNCTION
 bool test_builtin_pwd_once(command_t *cmd, int expected)
 {
   int actualPwd = builtin_pwd(cmd);
@@ -263,7 +261,7 @@ bool test_builtin_pwd_once(command_t *cmd, int expected)
   return true;
 }
 
-// Tests the builtin_pwd function
+// TESTS THE pwd FUNCTION
 bool test_builtin_pwd()
 {
   int passed = 0;
@@ -274,7 +272,7 @@ bool test_builtin_pwd()
 
   command_t *cmd1 = command_new();
   command_append_arg(cmd1, "pwd");
-  command_append_arg(cmd1, "/check/this/also");
+  command_append_arg(cmd1, "/bad/cmd/here");
   if (test_builtin_pwd_once(cmd1, 0))
     passed++;
 
@@ -313,7 +311,7 @@ int builtin_setenv(command_t *cmd)
   return 0;
 }
 
-// Tests one test case of the builtin_setenv function
+// TESTS ONE CASE OF THE builtin_setenv FUNCTION
 bool test_builtin_setenv_once(command_t *cmd, int expected)
 {
   int actualSetenv = builtin_setenv(cmd);
@@ -326,7 +324,7 @@ bool test_builtin_setenv_once(command_t *cmd, int expected)
   return true;
 }
 
-// Tests the builtin_setenv function
+// TESTS THE setenv FUNCTION
 bool test_builtin_setenv()
 {
   int passed = 0;
@@ -370,18 +368,14 @@ int forkexec_external_cmd(command_t *cmd)
   if (pid == 0)
   {
 
-    // SET stdin
+    // DEFINING stdin TO THE INPUT FILE WHEN NOT GIVEN
     if (command_get_input(cmd) != NULL)
-    {
       freopen(command_get_input(cmd), "r", stdin);
-    }
 
-    // SET stdout
+    // DEFINING stdin TO THE INPUT FILE WHEN NOT GIVEN
     if (command_get_output(cmd) != NULL)
-    {
       freopen(command_get_output(cmd), "a", stdout);
-    }
-    
+
     // EXECUTE THE COMMAND IF IT EXISTS
     if (execvp(command_get_argv(cmd)[0], command_get_argv(cmd)) == -1)
     {
@@ -402,6 +396,7 @@ int forkexec_external_cmd(command_t *cmd)
     // IF THE CHILD PROCESS DID NOT EXIT SUCCESSFULLY, PRINT THE ERROR & RETURN STATUS CODE
     if (WEXITSTATUS(status) != 0)
       printf("Child %d exited with status %d \n", pid, WEXITSTATUS(status));
+
     return WEXITSTATUS(status);
   }
 
@@ -439,7 +434,7 @@ bool test_forkexec_external_cmd()
   command_t *cmd1 = command_new();
   command_append_arg(cmd1, "grep");
   command_append_arg(cmd1, "pattern");
-  command_append_arg(cmd1, "doesntexisat.txt");
+  command_append_arg(cmd1, "notesists.txt");
   if (test_forkexec_external_cmd_once(cmd1, 2))
     passed++;
 
