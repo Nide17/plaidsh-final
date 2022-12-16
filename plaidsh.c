@@ -487,7 +487,7 @@ void execute_command(command_t *cmd)
 
   // IF NO ARGUMENTS, PRINT CURRENT ERROR AND KEEP PROMPTING
   else
-    fprintf(stderr, "Error!\n");
+    fprintf(stderr, "Error: Undefined variable \"  \"!\n");
 }
 
 bool test_execute_command_once(command_t *cmd)
@@ -564,7 +564,7 @@ void mainloop()
 int main(int argc, char *argv[])
 {
 
-  printf("Running tests for builtin functions - in plaidsh\n");
+  printf("RUNNING TESTS FOR BUILTIN FUNCTIONS - IN plaidsh.c\n\n");
   int success = 1;
 
   success &= test_builtin_author();
@@ -576,14 +576,10 @@ int main(int argc, char *argv[])
   success &= test_builtin_exit();
 
   if (success)
-  {
-    printf("Excellent work! All tests succeeded!\n");
-  }
+    printf("EXCELLENT WORK! ALL plaidsh.c TESTS SUCCEEDED!\n\n\n");
 
   else
-  {
-    printf("NOTE: FAILURES OCCURRED\n");
-  }
+    printf("NOTE: FAILURES OCCURRED IN plaidsh.c\n\n\n");
 
   mainloop();
   return 0;

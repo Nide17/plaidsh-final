@@ -54,9 +54,10 @@ int read_word(const char *input, char *word, size_t word_len)
     {
       // COUNT THE NUMBER OF QUOTES FROM THE FIRST, AND CHECK IF IT IS ODD OR EVEN
       int quotCount = 0;
+
       for (int i = 0; i < strlen(input); i++)
       {
-        if (input[i - 1] != '\\' && input[i] == '"')
+        if (*(input + i - 1) != '\\' && *(input + i) == '"')
           quotCount++;
       }
 
@@ -136,12 +137,12 @@ int read_word(const char *input, char *word, size_t word_len)
       // CHECK IF THE VARIABLE NAME IS ALPHANUMERIC
       while (isalnum(*(inpt + 1)))
       {
-        varContainter[count] = *(inpt + 1);
+        *(varContainter + count) = *(inpt + 1);
         inpt++;
         count++;
       }
 
-      varContainter[count] = '\0';
+      *(varContainter + count) = '\0';
 
       // GETTING THE VALUE OF THE VARIABLE FROM THE ENVIRONMENT
       char *actValue = getenv(varContainter);
@@ -255,25 +256,25 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
     if (chars_read == 0) // end of input string
       break;
 
-    if (word[0] == '\0') // whitespace only
+    if (*word == '\0') // whitespace only
       continue;
 
     // IF THE FIRST CHARACTER OF THE WORD IS < OR >
-    if (word[0] == '<' || word[0] == '>' || (word[0] == '>' && word[1] == '>'))
+    if (*word == '<' || *word == '>' || (*word == '>' && *(word + 1) == '>'))
     {
       // ALREADY A VALUE FOR IN_FILE OR OUT_FILE, COPY ERROR - “Multiple redirections not allowed”
-      if ((word[0] == '<' && command_get_input(cmd) != NULL) || (word[0] == '>' && command_get_output(cmd) != NULL) || (word[0] == '>' && word[1] == '>' && command_get_output(cmd) != NULL))
+      if ((*word == '<' && command_get_input(cmd) != NULL) || (*word == '>' && command_get_output(cmd) != NULL) || (*word == '>' && *(word + 1) == '>' && command_get_output(cmd) != NULL))
       {
         strncpy(err_msg, "Multiple redirections not allowed", err_msg_len);
         return NULL;
       }
 
-      // OTHERWISE, PASS THE PROVIDED FILENAME, STARTING AT word[1]
-      if (word[0] == '<')
+      // OTHERWISE, PASS THE PROVIDED FILENAME, STARTING AT *(word + 1)
+      if (*word == '<')
         command_set_input(cmd, word + 1);
 
-      else if (word[0] == '>' && word[1] == '>')
-      // append to file - THIS IS CORRECT
+      else if (*word == '>' && *(word + 1) == '>')
+        // append to file - THIS IS CORRECT
         command_set_output(cmd, word + 2);
 
       else
@@ -292,7 +293,7 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
       char *expanded_word = malloc(sizeof(char) * (strlen(word) + strlen(homeDir) + 1));
 
       // HANDLING THE EXPANSIONS
-      switch (word[0])
+      switch (*word)
       {
       case '~':
         // TILDE EXTENSION - REPLACE ~ WITH THE HOME DIRECTORY
@@ -321,7 +322,7 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
       for (int i = 0; i < globbuf.gl_pathc; i++)
 
         // IF THE WORD ENDS WITH /, ADD IT AS IT IS
-        if (word[strlen(word) - 1] == '/')
+        if (*(word + strlen(word) - 1) == '/')
           command_append_arg(cmd, word);
         else
           command_append_arg(cmd, globbuf.gl_pathv[i]);
