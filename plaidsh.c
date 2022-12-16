@@ -369,6 +369,19 @@ int forkexec_external_cmd(command_t *cmd)
   // IF PARENT PROCESS - EXECUTE IT
   if (pid == 0)
   {
+
+    // SET stdin
+    if (command_get_input(cmd) != NULL)
+    {
+      freopen(command_get_input(cmd), "r", stdin);
+    }
+
+    // SET stdout
+    if (command_get_output(cmd) != NULL)
+    {
+      freopen(command_get_output(cmd), "a", stdout);
+    }
+    
     // EXECUTE THE COMMAND IF IT EXISTS
     if (execvp(command_get_argv(cmd)[0], command_get_argv(cmd)) == -1)
     {
