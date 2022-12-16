@@ -361,6 +361,7 @@ bool test_builtin_setenv()
  */
 int forkexec_external_cmd(command_t *cmd)
 {
+  
   // FORKING THE PROCESS
   pid_t pid = fork();
   int status;
@@ -384,20 +385,17 @@ int forkexec_external_cmd(command_t *cmd)
   {
     // WAIT FOR THE CHILD PROCESS TO TERMINATE
     waitpid(pid, &status, 0);
-    return WEXITSTATUS(status);
-  }
 
-  // CHECK THIS OUT
-  if (WEXITSTATUS(status) != 0)
-  {
-    fprintf(stderr, "Child %d exited with status %d \n", pid, WEXITSTATUS(status));
-    return -1;
+    // IF THE CHILD PROCESS DID NOT EXIT SUCCESSFULLY, PRINT THE ERROR & RETURN STATUS CODE
+    if (WEXITSTATUS(status) != 0)
+      printf("Child %d exited with status %d \n", pid, WEXITSTATUS(status));
+    return WEXITSTATUS(status);
   }
 
   // IF ERROR, COMMAND FAILED - RETURN -1
   else
   {
-    fprintf(stdout, "Child %d exited with status %d \n", pid, WEXITSTATUS(pid));
+    fprintf(stdout, "Command failed \n");
     return -1;
   }
 }
