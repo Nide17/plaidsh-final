@@ -148,7 +148,7 @@ int read_word(const char *input, char *word, size_t word_len)
       char *actValue = getenv(varContainter);
 
       // IF THE VARIABLE - varContainter - IS NOT DEFINED, RETURN AN ERROR
-      if (!actValue)
+      if (actValue == NULL)
       {
         sprintf(word, "Undefined variable: \'%s\'", varContainter);
         return -1;

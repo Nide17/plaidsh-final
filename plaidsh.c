@@ -477,7 +477,6 @@ void execute_command(command_t *cmd)
       forkexec_external_cmd(cmd);
   }
 
-  // IF NO ARGUMENTS, PRINT CURRENT ERROR AND KEEP PROMPTING
   else
     fprintf(stderr, "Error: Undefined variable \"  \"!\n");
 }
