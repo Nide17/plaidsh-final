@@ -295,11 +295,10 @@ bool test_builtin_pwd()
  */
 int builtin_setenv(command_t *cmd)
 {
-
-  // THERE IS ONE ARG AND IS THE setenv || THERE IS TWO ARGS - THE setenv & VARNAME - NO VALUE
-  if ((command_get_argc(cmd) == 1 && strcmp(command_get_argv(cmd)[0], "setenv") == 0) || (command_get_argc(cmd) == 2 && strcmp(command_get_argv(cmd)[0], "setenv") == 0))
+  // ILLEGAL NUMBER OF ARGS
+  if (command_get_argc(cmd) != 3 && strcmp(command_get_argv(cmd)[0], "setenv") == 0)
   {
-    fprintf(stderr, "Illegal variable name: '%s'\n", command_get_argv(cmd)[1]);
+    fprintf(stderr, "usage: setenv varname value (%d args provided, expected 3)\n", command_get_argc(cmd));
     return 1;
   }
 
@@ -309,13 +308,6 @@ int builtin_setenv(command_t *cmd)
     // SET THE ENVIRONMENT VARIABLE
     setenv(command_get_argv(cmd)[1], command_get_argv(cmd)[2], 1);
     return 0;
-  }
-
-  // WHEN ARGS ARE GREATER THAN 3
-  else if (command_get_argc(cmd) > 3 && strcmp(command_get_argv(cmd)[0], "setenv") == 0)
-  {
-    fprintf(stderr, "Invalid syntax for: '%s'\n", command_get_argv(cmd)[1]);
-    return 1;
   }
 
   return 0;
