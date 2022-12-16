@@ -273,6 +273,7 @@ command_t *parse_input(const char *input, char *err_msg, size_t err_msg_len)
         command_set_input(cmd, word + 1);
 
       else if (word[0] == '>' && word[1] == '>')
+      // append to file - THIS IS CORRECT
         command_set_output(cmd, word + 2);
 
       else
